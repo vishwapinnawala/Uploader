@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
+use App\Exceptions;
+use Exception;
 
 class TripController extends Controller
 {
@@ -101,12 +103,12 @@ class TripController extends Controller
                         'end_date' => $endDate
                     ]);
 
-                    if (isset($trip->id)) { 
+                    if (isset($trip->id)) {try{
                         if ($request->hasFile('images')) {
                             $namesAr = [];
-                            foreach ($images as $image) {
-                              // $destinationPath = 'trips/'.$trip->id;
+                            foreach ($images as $image) {                             
                               $filename = $image->getClientOriginalName();
+                               // $destinationPath = 'trips/'.$trip->id;
                               // $image->move($destinationPath, $filename);
                               $image->storeAs('public/trips/'.$trip->id, $filename);
                               array_push($namesAr, $filename);
@@ -123,7 +125,10 @@ class TripController extends Controller
                             'Result' => true,
                             'Message' => 'Recorded successfully',
                             'TripID' => $trip->id
-                        ]);
+                        ]);}
+                        catch (Exception $e){
+                            echo $e;
+                        }
                     } else {
                         return response()->json([
                             'Result' => false,
